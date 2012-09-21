@@ -56,7 +56,7 @@ class Database(object):
       self.m_session = None
 
     else:
-      self.m_session = utils.session(INFO.type(), INFO.files()[0])
+      self.m_session = utils.session_try_readonly(INFO.type(), SQLITE_FILE)
 
   def is_valid(self):
     """Returns if a valid session has been opened for reading the database"""
