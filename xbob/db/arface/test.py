@@ -21,74 +21,73 @@
 
 import os, sys
 import unittest
-from .query import Database
+import xbob.db.arface
 
 class ARfaceDatabaseTest(unittest.TestCase):
   """Performs various tests on the AR Face database."""
 
   def test01_clients(self):
-    db = Database()
-    
+    db = xbob.db.arface.Database()
+
     # test that the expected number of clients is returned
-    self.assertEqual(len(db.clients()), 136)
-    self.assertEqual(len(db.clients(genders='m')), 76)
-    self.assertEqual(len(db.clients(genders='w')), 60)
-    self.assertEqual(len(db.clients(groups='world')), 50)
-    self.assertEqual(len(db.clients(groups='dev')), 43)
-    self.assertEqual(len(db.clients(groups='eval')), 43)
-    self.assertEqual(len(db.clients(groups='dev', genders='m')), 24)
-    self.assertEqual(len(db.clients(groups='eval', genders='m')), 24)
-    
-    self.assertEqual(db.clients(), db.models())
-    
+    self.assertEqual(len(db.client_ids()), 136)
+    self.assertEqual(len(db.client_ids(genders='m')), 76)
+    self.assertEqual(len(db.client_ids(genders='w')), 60)
+    self.assertEqual(len(db.client_ids(groups='world')), 50)
+    self.assertEqual(len(db.client_ids(groups='dev')), 43)
+    self.assertEqual(len(db.client_ids(groups='eval')), 43)
+    self.assertEqual(len(db.client_ids(groups='dev', genders='m')), 24)
+    self.assertEqual(len(db.client_ids(groups='eval', genders='m')), 24)
+
+    self.assertEqual(db.model_ids(), [client.id for client in db.clients()])
+
 
   def test02_files(self):
-    db = Database()
-    
-    # test that the files() function returns reasonable numbers of files
-    self.assertEqual(len(db.files()), 3312)
-    
-    # number of world files for the two genders
-    self.assertEqual(len(db.files(groups='world')), 1076)
-    self.assertEqual(len(db.files(groups='world', genders='m')), 583)
-    self.assertEqual(len(db.files(groups='world', genders='w')), 493)
+    db = xbob.db.arface.Database()
 
-    # number of world files might differ for some protocols 
+    # test that the files() function returns reasonable numbers of files
+    self.assertEqual(len(db.objects(protocol='all')), 3312)
+
+    # number of world files for the two genders
+    self.assertEqual(len(db.objects(groups='world', protocol='all')), 1076)
+    self.assertEqual(len(db.objects(groups='world', genders='m', protocol='all')), 583)
+    self.assertEqual(len(db.objects(groups='world', genders='w', protocol='all')), 493)
+
+    # number of world files might differ for some protocols
     # since all identities that did not contain all files went into the world set
-    self.assertEqual(len(db.files(groups='world', protocol='expression')), 330)
-    self.assertEqual(len(db.files(groups='world', protocol='illumination')), 329)
-    self.assertEqual(len(db.files(groups='world', protocol='occlusion')), 247)
-    self.assertEqual(len(db.files(groups='world', protocol='occlusion_and_illumination')), 413)
- 
+    self.assertEqual(len(db.objects(groups='world', protocol='expression')), 330)
+    self.assertEqual(len(db.objects(groups='world', protocol='illumination')), 329)
+    self.assertEqual(len(db.objects(groups='world', protocol='occlusion')), 247)
+    self.assertEqual(len(db.objects(groups='world', protocol='occlusion_and_illumination')), 413)
+
     for g in ['dev', 'eval']:
       # assert that each dev and eval client has 26 files
-      models = db.models(groups=g)
-      self.assertEqual(len(db.files(groups=g)), 26 * len(models))
-      for model_id in models:
-        # two enrol files
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='enrol')), 2)
+      model_ids = db.model_ids(groups=g)
+      self.assertEqual(len(db.objects(groups=g, protocol='all')), 26 * len(model_ids))
+      for protocol in db.m_protocols:
+        self.assertEqual(len(db.objects(groups=g, purposes='enrol', protocol=protocol)), 2 * len(model_ids))
+      for model_id in model_ids:
+        # two enrol files for all protocols
+        for protocol in db.m_protocols:
+          self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='enrol', protocol=protocol)), 2)
 
         # 24 probe files for the (default) 'all' protocol
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='probe')), 24 * len(models))
-        # 6 probe files for the 'expression' protocol 
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='probe', protocol='expression')), 6 * len(models))
-        # 6 probe files for the 'illumination' protocol 
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='probe', protocol='illumination')), 6 * len(models))
-        # 4 probe files for the 'occlusion' protocol 
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion')), 4 * len(models))
-        # and finally 8 probe files for the 'illuminatio_and_occlusion' protocol 
-        self.assertEqual(len(db.files(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion_and_illumination')), 8 * len(models))
+        self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='all')), 24 * len(model_ids))
+        # 6 probe files for the 'expression' protocol
+        self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='expression')), 6 * len(model_ids))
+        # 6 probe files for the 'illumination' protocol
+        self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='illumination')), 6 * len(model_ids))
+        # 4 probe files for the 'occlusion' protocol
+        self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion')), 4 * len(model_ids))
+        # and finally 8 probe files for the 'illuminatio_and_occlusion' protocol
+        self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion_and_illumination')), 8 * len(model_ids))
 
 
   def test03_manage_dumplist_1(self):
-
     from bob.db.script.dbmanage import main
-
     self.assertEqual(main('arface dumplist --self-test'.split()), 0)
 
 
   def test04_manage_checkfiles(self):
-
     from bob.db.script.dbmanage import main
-
     self.assertEqual(main('arface checkfiles --self-test'.split()), 0)

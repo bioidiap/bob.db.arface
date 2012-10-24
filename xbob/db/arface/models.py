@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
-# @author: Manuel Guenther <Manuel.Guenther@idiap.ch> 
+# @author: Manuel Guenther <Manuel.Guenther@idiap.ch>
 # @date:   Wed Jul  4 14:12:51 CEST 2012
 #
 # Copyright (C) 2011-2012 Idiap Research Institute, Martigny, Switzerland
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,91 +33,140 @@ Base = declarative_base()
 class Client(Base):
   """Information about the clients (identities) of the LFW database"""
   __tablename__ = 'client'
-  
+
   # We define the possible values for the member variables as STATIC class variables
-  s_genders = ('m', 'w')
-  s_groups = ('world', 'dev', 'eval')
-  
-  m_id = Column(String(100), primary_key=True)
-  m_gender = Column(Enum(*s_genders))
-  m_group = Column(Enum(*s_groups))
+  gender_choices = ('m', 'w')
+  group_choices = ('world', 'dev', 'eval')
+
+  id = Column(String(100), primary_key=True)
+  gender = Column(Enum(*gender_choices))
+  sgroup = Column(Enum(*group_choices))
 
   def __init__(self, id, group):
-    self.m_id = id
-    self.m_gender = id[0:1]
-    self.m_group = group
+    self.id = id
+    self.gender = id[0:1]
+    self.sgroup = group
 
   def __repr__(self):
-    return "<Client('%s')>" % self.m_id
+    return "<Client('%s')>" % self.id
 
 class File(Base):
   """Information about the files of the LFW database"""
   __tablename__ = 'file'
-  
-  # We define the possible values for the member variables as STATIC class variables
-  s_sessions = ('first', 'second')
-  s_purposes = ('enrol', 'probe')
-  s_expressions = ('neutral', 'smile', 'anger', 'scream')
-  s_illuminations = ('front', 'left', 'right', 'all')
-  s_occlusions = ('none', 'sunglasses', 'scarf')
 
-  m_id = Column(String(100), primary_key=True)
-  m_client_id = Column(String(100), ForeignKey('client.m_id'))
-  m_session = Column(Enum(*s_sessions))
-  m_purpose = Column(Enum(*s_purposes))
-  m_expression = Column(Enum(*s_expressions))
-  m_illumination = Column(Enum(*s_illuminations))
-  m_occlusion = Column(Enum(*s_occlusions))
+  # We define the possible values for the member variables as STATIC class variables
+  session_choices = ('first', 'second')
+  purpose_choices = ('enrol', 'probe')
+  expression_choices = ('neutral', 'smile', 'anger', 'scream')
+  illumination_choices = ('front', 'left', 'right', 'all')
+  occlusion_choices = ('none', 'sunglasses', 'scarf')
+
+  id = Column(String(100), primary_key=True)
+  path = Column(String(100), unique=True)
+  client_id = Column(String(100), ForeignKey('client.id'))
+  session = Column(Enum(*session_choices))
+  purpose = Column(Enum(*purpose_choices))
+  expression = Column(Enum(*expression_choices))
+  illumination = Column(Enum(*illumination_choices))
+  occlusion = Column(Enum(*occlusion_choices))
+
+  # a back-reference from the client class to a list of files
+  client = relationship("Client", backref=backref("files", order_by=id))
 
   def __init__(self, image_name):
-    self.m_id = image_name
-    self.m_client_id = image_name[:5]
-    
+    self.id = image_name
+    self.path = image_name
+    self.client_id = image_name[:5]
+
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
     # automatically fill member variables accorsing to shot id
-    self.m_session = self.s_sessions[(shot_id-1) / 13]
+    self.session = self.session_choices[(shot_id-1) / 13]
     shot_id = (shot_id-1) % 13 + 1
-    
-    self.m_purpose = self.s_purposes[0 if shot_id == 1 else 1]
-    
-    self.m_expression = self.s_expressions[shot_id - 1] if shot_id in (2,3,4) else self.s_expressions[0]  
-                        
-    self.m_illumination = self.s_illuminations[shot_id - 4]  if shot_id in (5,6,7) else \
-                          self.s_illuminations[shot_id - 8]  if shot_id in (9,10) else \
-                          self.s_illuminations[shot_id - 11] if shot_id in (12,13) else \
-                          self.s_illuminations[0]
-                          
-    self.m_occlusion = self.s_occlusions[1] if shot_id in (8,9,10) else \
-                       self.s_occlusions[2] if shot_id in (11,12,13) else \
-                       self.s_occlusions[0]
-    
+
+    self.purpose = self.purpose_choices[0 if shot_id == 1 else 1]
+
+    self.expression = self.expression_choices[shot_id - 1] if shot_id in (2,3,4) else self.expression_choices[0]
+
+    self.illumination = self.illumination_choices[shot_id - 4]  if shot_id in (5,6,7) else \
+                        self.illumination_choices[shot_id - 8]  if shot_id in (9,10) else \
+                        self.illumination_choices[shot_id - 11] if shot_id in (12,13) else \
+                        self.illumination_choices[0]
+
+    self.occlusion = self.occlusion_choices[1] if shot_id in (8,9,10) else \
+                     self.occlusion_choices[2] if shot_id in (11,12,13) else \
+                     self.occlusion_choices[0]
+
 
   def __repr__(self):
-    print "<File('%s')>" % self.m_id
+    return "<File('%s')>" % self.id
+
+  def make_path(self, directory=None, extension=None):
+    """Wraps the current path so that a complete path is formed
+
+    Keyword parameters:
+
+    directory
+      An optional directory name that will be prefixed to the returned result.
+
+    extension
+      An optional extension that will be suffixed to the returned filename. The
+      extension normally includes the leading ``.`` character as in ``.jpg`` or
+      ``.hdf5``.
+
+    Returns a string containing the newly generated file path.
+    """
+
+    if not directory: directory = ''
+    if not extension: extension = ''
+
+    return os.path.join(directory, self.path + extension)
+
+  def save(self, data, directory=None, extension='.hdf5'):
+    """Saves the input data at the specified location and using the given
+    extension.
+
+    Keyword parameters:
+
+    data
+      The data blob to be saved (normally a :py:class:`numpy.ndarray`).
+
+    directory
+      If not empty or None, this directory is prefixed to the final file
+      destination
+
+    extension
+      The extension of the filename - this will control the type of output and
+      the codec for saving the input blob.
+    """
+
+    path = self.make_path(directory, extension)
+    bob.utils.makedirs_safe(os.path.dirname(path))
+    bob.io.save(data, path)
+
 
 
 class Protocol(Base):
   """Information of the pairs (as given in the pairs.txt files) of the LFW database"""
   __tablename__ = 'pair'
-  
-  s_protocols = ('all', 'expression', 'illumination', 'occlusion', 'occlusion_and_illumination')
 
-  m_id = Column(Integer, primary_key=True)
-  m_protocol = Column(Enum(*s_protocols))
-  m_session = Column(Enum(*File.s_sessions), ForeignKey('file.m_session'))
-  m_expression = Column(Enum(*File.s_expressions), ForeignKey('file.m_expression'))
-  m_illumination = Column(Enum(*File.s_illuminations), ForeignKey('file.m_illumination'))
-  m_occlusion = Column(Enum(*File.s_occlusions), ForeignKey('file.m_occlusion'))
-  
+  protocol_choices = ('all', 'expression', 'illumination', 'occlusion', 'occlusion_and_illumination')
+
+  id = Column(Integer, primary_key=True)
+  name = Column(Enum(*protocol_choices))
+  session = Column(Enum(*File.session_choices), ForeignKey('file.session'))
+  expression = Column(Enum(*File.expression_choices), ForeignKey('file.expression'))
+  illumination = Column(Enum(*File.illumination_choices), ForeignKey('file.illumination'))
+  occlusion = Column(Enum(*File.occlusion_choices), ForeignKey('file.occlusion'))
+
 
   def __init__(self, protocol, session, expression = 'neutral', illumination = 'front', occlusion = 'none'):
-    self.m_protocol = protocol
-    self.m_session = session
-    self.m_expression = expression
-    self.m_illumination = illumination
-    self.m_occlusion = occlusion
+    self.name = protocol
+    self.session = session
+    self.expression = expression
+    self.illumination = illumination
+    self.occlusion = occlusion
 
   def __repr__(self):
-    return "<Pair('%s', '%s', '%s', '%s', '%s')>" % (self.m_protocol, self.m_session, self.m_expression, self.m_illumination, self.m_occlusion)
+    return "<Pair('%s', '%s', '%s', '%s', '%s')>" % (self.name, self.session, self.expression, self.illumination, self.occlusion)
 

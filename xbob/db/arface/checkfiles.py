@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
-# @author: Manuel Guenther <Manuel.Guenther@idiap.ch> 
+# @author: Manuel Guenther <Manuel.Guenther@idiap.ch>
 # @date:   Wed Jul  4 14:12:51 CEST 2012
 #
 # Copyright (C) 2011-2012 Idiap Research Institute, Martigny, Switzerland
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3 of the License.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -32,16 +32,14 @@ def checkfiles(args):
   from .query import Database
   db = Database()
 
-  r = db.files(
-      directory=args.directory,
-      extension=args.extension)
+  r = db.objects()
 
   # go through all files, check if they are available on the filesystem
   good = {}
   bad = {}
-  for id, f in r.items():
-    if os.path.exists(f): good[id] = f
-    else: bad[id] = f
+  for f in r:
+    if os.path.exists(f.make_path(args.directory,args.extension)): good[f.id] = f
+    else: bad[f.id] = f
 
   # report
   output = sys.stdout
@@ -51,7 +49,7 @@ def checkfiles(args):
 
   if bad:
     for id, f in bad.items():
-      output.write('Cannot find file "%s"\n' % (f,))
+      output.write('Cannot find file "%s"\n' % f.make_path(args.directory,args.extension))
     output.write('%d files (out of %d) were not found at "%s"\n' % \
         (len(bad), len(r), args.directory))
 
@@ -59,7 +57,7 @@ def checkfiles(args):
 
 def add_command(subparsers):
   """Add specific subcommands that the action "checkfiles" can use"""
-  
+
   from argparse import SUPPRESS
 
   # get the "checkfiles" action from a submodule
