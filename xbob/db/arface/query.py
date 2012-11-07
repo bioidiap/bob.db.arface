@@ -148,7 +148,6 @@ class Database(object):
   model_ids = client_ids
 
 
-
   def get_client_id_from_file_id(self, file_id):
     """Returns the client_id (real client id) attached to the given file_id
 
@@ -165,6 +164,7 @@ class Database(object):
 
     assert q.count() == 1
     return q.first().client_id
+
 
   def get_client_id_from_model_id(self, model_id):
     """Returns the client_id attached to the given model_id

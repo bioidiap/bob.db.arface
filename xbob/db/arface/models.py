@@ -148,7 +148,7 @@ class File(Base):
 
 class Protocol(Base):
   """Information of the pairs (as given in the pairs.txt files) of the LFW database"""
-  __tablename__ = 'pair'
+  __tablename__ = 'protocol'
 
   protocol_choices = ('all', 'expression', 'illumination', 'occlusion', 'occlusion_and_illumination')
 
