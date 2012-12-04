@@ -31,7 +31,7 @@ import os
 Base = declarative_base()
 
 class Client(Base):
-  """Information about the clients (identities) of the LFW database"""
+  """Information about the clients (identities) of the AR face database"""
   __tablename__ = 'client'
 
   # We define the possible values for the member variables as STATIC class variables
@@ -51,7 +51,14 @@ class Client(Base):
     return "<Client('%s')>" % self.id
 
 class File(Base):
-  """Information about the files of the LFW database"""
+  """Information about the files of the AR face database. Each file includes
+
+  * the session (first, second)
+  * the expression (neutral, smile, anger, scream)
+  * the illumination (front, left, right, all)
+  * the occlusion (none, sunglasses, scarf)
+  * the client id
+  """
   __tablename__ = 'file'
 
   # We define the possible values for the member variables as STATIC class variables
@@ -80,7 +87,7 @@ class File(Base):
 
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
-    # automatically fill member variables accorsing to shot id
+    # automatically fill member variables according to shot id
     self.session = self.session_choices[(shot_id-1) / 13]
     shot_id = (shot_id-1) % 13 + 1
 
@@ -147,7 +154,7 @@ class File(Base):
 
 
 class Protocol(Base):
-  """Information of the pairs (as given in the pairs.txt files) of the LFW database"""
+  """The protocols of the AR face database."""
   __tablename__ = 'protocol'
 
   protocol_choices = ('all', 'expression', 'illumination', 'occlusion', 'occlusion_and_illumination')

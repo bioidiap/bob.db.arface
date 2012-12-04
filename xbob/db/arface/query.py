@@ -257,9 +257,7 @@ class Database(object):
       queries.append(\
         _filter_types(
           self.m_session.query(File).join(Client)\
-              .join((Protocol, and_(File.expression == Protocol.expression, File.illumination == Protocol.illumination, File.occlusion == Protocol.occlusion)))\
               .filter(Client.sgroup == 'world')\
-              .filter(Protocol.name == protocol)
         )
       )
 
