@@ -53,12 +53,11 @@ class ARfaceDatabaseTest(unittest.TestCase):
     self.assertEqual(len(db.objects(groups='world', genders='m', protocol='all')), 583)
     self.assertEqual(len(db.objects(groups='world', genders='w', protocol='all')), 493)
 
-    # number of world files might differ for some protocols
-    # since all identities that did not contain all files went into the world set
-    self.assertEqual(len(db.objects(groups='world', protocol='expression')), 330)
-    self.assertEqual(len(db.objects(groups='world', protocol='illumination')), 329)
-    self.assertEqual(len(db.objects(groups='world', protocol='occlusion')), 247)
-    self.assertEqual(len(db.objects(groups='world', protocol='occlusion_and_illumination')), 413)
+    # number of world files are identical for all protocols
+    self.assertEqual(len(db.objects(groups='world', protocol='expression')), 1076)
+    self.assertEqual(len(db.objects(groups='world', protocol='illumination')), 1076)
+    self.assertEqual(len(db.objects(groups='world', protocol='occlusion')), 1076)
+    self.assertEqual(len(db.objects(groups='world', protocol='occlusion_and_illumination')), 1076)
 
     for g in ['dev', 'eval']:
       # assert that each dev and eval client has 26 files
