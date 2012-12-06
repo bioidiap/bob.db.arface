@@ -26,6 +26,8 @@ from bob.db.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
+import xbob.db.verification.utils
+
 import os
 
 Base = declarative_base()
@@ -50,7 +52,8 @@ class Client(Base):
   def __repr__(self):
     return "<Client('%s')>" % self.id
 
-class File(Base):
+
+class File(Base, xbob.db.verification.utils.File):
   """Information about the files of the AR face database. Each file includes
 
   * the session (first, second)
@@ -81,9 +84,8 @@ class File(Base):
   client = relationship("Client", backref=backref("files", order_by=id))
 
   def __init__(self, image_name):
-    self.id = image_name
-    self.path = image_name
-    self.client_id = image_name[:5]
+    # call base class constructor
+    xbob.db.verification.utils.File.__init__(self, file_id = image_name, client_id = image_name[:5], path = image_name)
 
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
@@ -103,53 +105,6 @@ class File(Base):
     self.occlusion = self.occlusion_choices[1] if shot_id in (8,9,10) else \
                      self.occlusion_choices[2] if shot_id in (11,12,13) else \
                      self.occlusion_choices[0]
-
-
-  def __repr__(self):
-    return "<File('%s')>" % self.id
-
-  def make_path(self, directory=None, extension=None):
-    """Wraps the current path so that a complete path is formed
-
-    Keyword parameters:
-
-    directory
-      An optional directory name that will be prefixed to the returned result.
-
-    extension
-      An optional extension that will be suffixed to the returned filename. The
-      extension normally includes the leading ``.`` character as in ``.jpg`` or
-      ``.hdf5``.
-
-    Returns a string containing the newly generated file path.
-    """
-
-    if not directory: directory = ''
-    if not extension: extension = ''
-
-    return os.path.join(directory, self.path + extension)
-
-  def save(self, data, directory=None, extension='.hdf5'):
-    """Saves the input data at the specified location and using the given
-    extension.
-
-    Keyword parameters:
-
-    data
-      The data blob to be saved (normally a :py:class:`numpy.ndarray`).
-
-    directory
-      If not empty or None, this directory is prefixed to the final file
-      destination
-
-    extension
-      The extension of the filename - this will control the type of output and
-      the codec for saving the input blob.
-    """
-
-    path = self.make_path(directory, extension)
-    bob.utils.makedirs_safe(os.path.dirname(path))
-    bob.io.save(data, path)
 
 
 
@@ -175,5 +130,5 @@ class Protocol(Base):
     self.occlusion = occlusion
 
   def __repr__(self):
-    return "<Pair('%s', '%s', '%s', '%s', '%s')>" % (self.name, self.session, self.expression, self.illumination, self.occlusion)
+    return "<Protocol('%s', '%s', '%s', '%s', '%s')>" % (self.name, self.session, self.expression, self.illumination, self.occlusion)
 

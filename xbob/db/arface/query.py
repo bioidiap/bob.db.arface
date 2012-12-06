@@ -22,15 +22,14 @@ AR face database.
 """
 
 import os
-from bob.db import utils
 from .models import *
 from .driver import Interface
 
-INFO = Interface()
+import xbob.db.verification.utils
 
-SQLITE_FILE = INFO.files()[0]
+SQLITE_FILE = Interface().files()[0]
 
-class Database(object):
+class Database(xbob.db.verification.utils.SQLiteDatabase):
   """The database class opens and maintains a connection opened to the Database.
 
   It provides many different ways to probe for the characteristics of the data
@@ -38,8 +37,8 @@ class Database(object):
   """
 
   def __init__(self):
-    # opens a session to the database - keep it open until the end
-    self.connect()
+    # call base class constructor
+    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE)
     # defines valid entries for various parameters
     self.m_groups  = Client.group_choices
     self.m_purposes = File.purpose_choices
@@ -49,46 +48,6 @@ class Database(object):
     self.m_illuminations = File.illumination_choices
     self.m_occlusions = File.occlusion_choices
     self.m_protocols = Protocol.protocol_choices
-
-  def connect(self):
-    """Tries connecting or re-connecting to the database"""
-    if not os.path.exists(SQLITE_FILE):
-      self.m_session = None
-    else:
-      self.m_session = utils.session_try_readonly(INFO.type(), SQLITE_FILE)
-
-  def is_valid(self):
-    """Returns if a valid session has been opened for reading the database"""
-    return self.m_session is not None
-
-  def assert_validity(self):
-    """Raise a RuntimeError if the database backend is not available"""
-    if not self.is_valid():
-      raise RuntimeError, "Database '%s' cannot be found at expected location '%s'. Create it and then try re-connecting using Database.connect()" % (INFO.name(), SQLITE_FILE)
-
-
-  def __check_validity__(self, elements, description, possibilities, default = None):
-    """Checks validity of user input data against a set of valid values"""
-    if not elements:
-      return default if default else possibilities
-    if not isinstance(elements, list) and not isinstance(elements, tuple):
-      return self.__check_validity__((elements,), description, possibilities, default)
-    for k in elements:
-      if k not in possibilities:
-        raise RuntimeError, 'Invalid %s "%s". Valid values are %s, or lists/tuples of those' % (description, k, possibilities)
-    return elements
-
-  def __check_single__(self, element, description, possibilities, default = None):
-    """Checks validity of user input data against a set of valid values"""
-    if not element:
-      return default
-    if isinstance(element,tuple) or isinstance (element,list):
-      if len(element) > 1:
-        raise RuntimeError, 'For %s, only single elements from %s are allowed' % (description, possibilities)
-      element = element[0]
-    if element not in possibilities:
-      raise RuntimeError, 'The given %s "%s" is not allowed. Please choose one of %s' % (description, element, possibilities)
-    return element
 
 
   def clients(self, groups=None, genders=None, protocol=None):
@@ -110,11 +69,10 @@ class Database(object):
     Returns: A list containing all the Client objects which have the desired properties.
     """
 
-    self.assert_validity()
-    groups = self.__check_validity__(groups, "group", self.m_groups)
-    genders = self.__check_validity__(genders, "group", self.m_genders)
+    groups = self.check_parameters_for_validity(groups, "group", self.m_groups)
+    genders = self.check_parameters_for_validity(genders, "group", self.m_genders)
 
-    query = self.m_session.query(Client)\
+    query = self.query(Client)\
                 .filter(Client.sgroup.in_(groups))\
                 .filter(Client.gender.in_(genders))
 
@@ -140,7 +98,6 @@ class Database(object):
     Returns: A list containing all the client ids which have the desired properties.
     """
 
-    self.assert_validity()
     return [client.id for client in self.clients(groups, genders, protocol)]
 
 
@@ -158,8 +115,7 @@ class Database(object):
 
     Returns: The client_id attached to the given file_id
     """
-    self.assert_validity()
-    q = self.m_session.query(File)\
+    q = self.query(File)\
             .filter(File.id == file_id)
 
     assert q.count() == 1
@@ -225,17 +181,14 @@ class Database(object):
       If not specified, both genders are returned.
 
     """
-    self.assert_validity()
-
     # check that every parameter is as expected
-    groups = self.__check_validity__(groups, "group", self.m_groups)
-    self.__check_single__(protocol, "protocol", self.m_protocols)
-    purposes = self.__check_validity__(purposes, "purpose", self.m_purposes)
-    sessions = self.__check_validity__(sessions, "session", self.m_sessions)
-    expressions = self.__check_validity__(expressions, "expression", self.m_expressions)
-    illuminations = self.__check_validity__(illuminations, "illumination", self.m_illuminations)
-    occlusions = self.__check_validity__(occlusions, "occlusion", self.m_occlusions)
-    genders = self.__check_validity__(genders, "gender", self.m_genders)
+    groups = self.check_parameters_for_validity(groups, "group", self.m_groups)
+    purposes = self.check_parameters_for_validity(purposes, "purpose", self.m_purposes)
+    sessions = self.check_parameters_for_validity(sessions, "session", self.m_sessions)
+    expressions = self.check_parameters_for_validity(expressions, "expression", self.m_expressions)
+    illuminations = self.check_parameters_for_validity(illuminations, "illumination", self.m_illuminations)
+    occlusions = self.check_parameters_for_validity(occlusions, "occlusion", self.m_occlusions)
+    genders = self.check_parameters_for_validity(genders, "gender", self.m_genders)
 
     # assure that the given model ids are in a tuple
     if isinstance(model_ids, str) or isinstance(model_ids, unicode):
@@ -256,17 +209,19 @@ class Database(object):
     if 'world' in groups:
       queries.append(\
         _filter_types(
-          self.m_session.query(File).join(Client)\
+          self.query(File).join(Client)\
               .filter(Client.sgroup == 'world')\
         )
       )
 
     if 'dev' in groups or 'eval' in groups:
+      protocol = self.check_parameter_for_validity(protocol, "protocol", self.m_protocols, 'all')
+
       t_groups = ('dev',) if not 'eval' in groups else ('eval',) if not 'dev' in groups else ('dev','eval')
 
       if 'enrol' in purposes:
         queries.append(\
-            self.m_session.query(File).join(Client)\
+            self.query(File).join(Client)\
                 .filter(Client.sgroup.in_(t_groups))\
                 .filter(Client.gender.in_(genders))\
                 .filter(File.purpose == 'enrol')\
@@ -275,7 +230,7 @@ class Database(object):
       if 'probe' in purposes:
         probe_queries.append(\
             _filter_types(
-              self.m_session.query(File).join(Client)\
+              self.query(File).join(Client)\
                   .join((Protocol, and_(File.expression == Protocol.expression, File.illumination == Protocol.illumination, File.occlusion == Protocol.occlusion)))\
                   .filter(Client.sgroup.in_(t_groups))\
                   .filter(File.purpose == 'probe')\
