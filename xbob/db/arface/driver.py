@@ -112,23 +112,18 @@ class Interface(BaseInterface):
     from .create import add_command as create_command
     create_command(subparsers)
 
-    # the "dumplist" action
     from .query import Database
     from .models import Client, File, Protocol
     db = Database()
-    if db.is_valid():
-      clients = db.client_ids()
-    else:
-      clients = ()
 
+    # the "dumplist" action
     parser = subparsers.add_parser('dumplist', help=dumplist.__doc__)
-
     parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
     parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('-g', '--group', help="if given, this value will limit the output files to those belonging to a particular group.", choices = Client.group_choices)
     parser.add_argument('-p', '--protocol', default = 'all', help="limits the dump to a particular subset of the data that corresponds to the given protocol.", choices = Protocol.protocol_choices)
     parser.add_argument('-u', '--purpose', help="if given, this value will limit the output files to those designed for the given purposes.", choices=File.purpose_choices)
-    parser.add_argument('-c', '--client', help="if given, this value will limit the output files to those designed for the given purposes.", choices=clients)
+    parser.add_argument('-C', '--client', help="if given, this value will limit the output files to those designed for the given purposes.", choices=db.client_ids() if db.is_valid() else ())
     parser.add_argument('-s', '--session', help="if given, this value will limit the output files to those designed for the given session.", choices=File.session_choices)
     parser.add_argument('-w', '--gender', help="if given, this value will limit the output files to those designed for the given gender.", choices=Client.gender_choices)
     parser.add_argument('-x', '--expression', help="if given, this value will limit the output files to those designed for the given expression.", choices=File.expression_choices)
@@ -139,9 +134,8 @@ class Interface(BaseInterface):
 
     # the "checkfiles" action
     parser = subparsers.add_parser('checkfiles', help=checkfiles.__doc__)
-
-    parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned (defaults to '%(default)s')")
-    parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned (defaults to '%(default)s')")
+    parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
+    parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)
     parser.set_defaults(func=checkfiles) #action
 

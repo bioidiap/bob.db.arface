@@ -82,11 +82,10 @@ class ARfaceDatabaseTest(unittest.TestCase):
         self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion_and_illumination')), 8 * len(model_ids))
 
 
-  def test03_manage_dumplist_1(self):
+  def test03_driver_api(self):
+
     from bob.db.script.dbmanage import main
     self.assertEqual(main('arface dumplist --self-test'.split()), 0)
-
-
-  def test04_manage_checkfiles(self):
-    from bob.db.script.dbmanage import main
+    self.assertEqual(main('arface dumplist --group=dev --protocol=expression --purpose=probe --session=first --client=m-001 --gender=m --expression=anger --illumination=front --occlusion=none --self-test'.split()), 0)
     self.assertEqual(main('arface checkfiles --self-test'.split()), 0)
+
