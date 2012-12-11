@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.arface',
-    version='1.0.0a1',
+    version='1.0.0',
     description='AR Face  Database Access API for Bob',
     url='http://github.com/bioidiap/xbob.db.arface',
     license='GPLv3',
