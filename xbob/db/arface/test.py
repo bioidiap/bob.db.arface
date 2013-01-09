@@ -78,7 +78,7 @@ class ARfaceDatabaseTest(unittest.TestCase):
         self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='illumination')), 6 * len(model_ids))
         # 4 probe files for the 'occlusion' protocol
         self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion')), 4 * len(model_ids))
-        # and finally 8 probe files for the 'illuminatio_and_occlusion' protocol
+        # and finally 8 probe files for the 'occlusion_and_illumination' protocol
         self.assertEqual(len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion_and_illumination')), 8 * len(model_ids))
 
 
@@ -88,4 +88,7 @@ class ARfaceDatabaseTest(unittest.TestCase):
     self.assertEqual(main('arface dumplist --self-test'.split()), 0)
     self.assertEqual(main('arface dumplist --group=dev --protocol=expression --purpose=probe --session=first --client=m-001 --gender=m --expression=anger --illumination=front --occlusion=none --self-test'.split()), 0)
     self.assertEqual(main('arface checkfiles --self-test'.split()), 0)
+    # actually, path's and id's are identical in ARface. Nonetheless, test the API:
+    self.assertEqual(main('arface reverse m-038-20 --self-test'.split()), 0)
+    self.assertEqual(main('arface path m-038-20 --self-test'.split()), 0)
 

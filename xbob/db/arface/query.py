@@ -38,7 +38,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
 
   def __init__(self):
     # call base class constructor
-    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE)
+    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
     # defines valid entries for various parameters
     self.m_groups  = Client.group_choices
     self.m_purposes = File.purpose_choices
