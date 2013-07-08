@@ -75,6 +75,30 @@ def add_files(session, directory, extension, verbose):
       if verbose > 1: print "  Adding file '%s'" % parts[0]
       session.add(File(parts[0]))
 
+
+def add_annotations(session, annotdir, verbose):
+  """Reads annotation files of the AR face database and integrates them into the SQL database."""
+
+  def read_annotation(filename, file_id):
+    # read the eye positions, which are stored as four integers in one line
+    line = open(filename, 'r').readline()
+    positions = line.split()
+    assert len(positions) == 4
+    return Annotation(file_id, positions)
+
+  # iterate though all stored images and try to access the annotations
+  session.flush()
+  if verbose: print "Adding annotations..."
+  files = session.query(File)
+  for f in files:
+    annot_file = f.make_path(annotdir, '.pos')
+    if os.path.exists(annot_file):
+      if verbose>1: print "  Adding annotation '%s'..." %(annot_file, )
+      session.add(read_annotation(annot_file, f.id))
+    else:
+      print "Could not locate annotation file '%s'" % annot_file
+
+
 def add_protocols(session, verbose):
   """Adds various protocols for the AR face database"""
   if verbose: print "Adding protocols ..."
@@ -142,6 +166,7 @@ def create(args):
   add_clients(s, args.verbose)
   add_files(s, args.directory, args.extension, args.verbose)
   add_protocols(s, args.verbose)
+  add_annotations(s, args.annotdir, args.verbose)
   s.commit()
   s.close()
 
@@ -154,5 +179,6 @@ def add_command(subparsers):
   parser.add_argument('-v', '--verbose', action='count', help='Do SQL operations in a verbose way?')
   parser.add_argument('-D', '--directory', metavar='DIR', default='/idiap/resource/database/AR_Face/images', help='The path to the images of the AR face database')
   parser.add_argument('--extension', metavar='STR', default='.ppm', help='The file extension of the image files from the AR face database')
+  parser.add_argument('-A', '--annotdir', metavar='DIR', default='/idiap/group/vision/visidiap/databases/groundtruth/purdue/eyecenter/', help="Change the relative path to the directory containing the annotations of the AR face database (defaults to %(default)s)")
 
   parser.set_defaults(func=create) #action
