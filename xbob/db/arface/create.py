@@ -179,6 +179,6 @@ def add_command(subparsers):
   parser.add_argument('-v', '--verbose', action='count', help='Do SQL operations in a verbose way?')
   parser.add_argument('-D', '--directory', metavar='DIR', default='/idiap/resource/database/AR_Face/images', help='The path to the images of the AR face database')
   parser.add_argument('--extension', metavar='STR', default='.ppm', help='The file extension of the image files from the AR face database')
-  parser.add_argument('-A', '--annotdir', metavar='DIR', default='/idiap/group/vision/visidiap/databases/groundtruth/purdue/eyecenter/', help="Change the relative path to the directory containing the annotations of the AR face database (defaults to %(default)s)")
+  parser.add_argument('-A', '--annotdir', metavar='DIR', default='/idiap/group/biometric/annotations/arface/', help="Change the relative path to the directory containing the annotations of the AR face database (defaults to %(default)s)")
 
   parser.set_defaults(func=create) #action
