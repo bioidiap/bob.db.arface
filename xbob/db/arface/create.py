@@ -41,38 +41,38 @@ def add_clients(session, verbose):
   eval_ids_m = set(range(1,77)) - world_ids_m - dev_ids_m
   eval_ids_w = set(range(1,61)) - world_ids_w - dev_ids_w
 
-  if verbose: print 'Adding clients ...'
+  if verbose: print('Adding clients ...')
   # now, we have: world: 28 male, 22 female; dev and eval: 24 male and 19 female
   # add these clients
   for id in world_ids_m:
-    if verbose>1: print "  Adding client 'm-%03d' to the world set" % id
+    if verbose>1: print("  Adding client 'm-%03d' to the world set" % id)
     session.add(Client("m-%03d"%id, 'world'))
   for id in world_ids_w:
-    if verbose>1: print "  Adding client 'w-%03d' to the world set" % id
+    if verbose>1: print("  Adding client 'w-%03d' to the world set" % id)
     session.add(Client("w-%03d"%id, 'world'))
 
   for id in dev_ids_m:
-    if verbose>1: print "  Adding client 'm-%03d' to the dev set" % id
+    if verbose>1: print("  Adding client 'm-%03d' to the dev set" % id)
     session.add(Client("m-%03d"%id, 'dev'))
   for id in dev_ids_w:
-    if verbose>1: print "  Adding client 'w-%03d' to the dev set" % id
+    if verbose>1: print("  Adding client 'w-%03d' to the dev set" % id)
     session.add(Client("w-%03d"%id, 'dev'))
 
   for id in eval_ids_m:
-    if verbose>1: print "  Adding client 'm-%03d' to the eval set" % id
+    if verbose>1: print("  Adding client 'm-%03d' to the eval set" % id)
     session.add(Client("m-%03d"%id, 'eval'))
   for id in eval_ids_w:
-    if verbose>1: print "  Adding client 'w-%03d' to the eval set" % id
+    if verbose>1: print("  Adding client 'w-%03d' to the eval set" % id)
     session.add(Client("w-%03d"%id, 'eval'))
 
 def add_files(session, directory, extension, verbose):
   """Adds the files from the given directory"""
   files = os.listdir(directory)
-  if verbose: print "Adding files ..."
+  if verbose: print("Adding files ...")
   for file in files:
     parts = os.path.splitext(file)
     if parts[1] == extension:
-      if verbose > 1: print "  Adding file '%s'" % parts[0]
+      if verbose > 1: print("  Adding file '%s'" % parts[0])
       session.add(File(parts[0]))
 
 
@@ -88,47 +88,47 @@ def add_annotations(session, annotdir, verbose):
 
   # iterate though all stored images and try to access the annotations
   session.flush()
-  if verbose: print "Adding annotations..."
+  if verbose: print("Adding annotations...")
   files = session.query(File)
   for f in files:
     annot_file = f.make_path(annotdir, '.pos')
     if os.path.exists(annot_file):
-      if verbose>1: print "  Adding annotation '%s'..." %(annot_file, )
+      if verbose>1: print("  Adding annotation '%s'..." %(annot_file, ))
       session.add(read_annotation(annot_file, f.id))
     else:
-      print "Could not locate annotation file '%s'" % annot_file
+      print("Could not locate annotation file '%s'" % annot_file)
 
 
 def add_protocols(session, verbose):
   """Adds various protocols for the AR face database"""
-  if verbose: print "Adding protocols ..."
+  if verbose: print("Adding protocols ...")
   for s in File.session_choices:
     # different expressions
     for e in File.expression_choices[1:]:
-      if verbose > 1: print "  Adding expression '%s' protocol for session '%s'" % (e,s)
+      if verbose > 1: print("  Adding expression '%s' protocol for session '%s'" % (e,s))
       session.add(Protocol('all', s, expression=e))
       session.add(Protocol('expression', s, expression=e))
 
     # different illuminations
     for i in File.illumination_choices[1:]:
-      if verbose > 1: print "  Adding illumination '%s' protocol for session '%s'" % (i,s)
+      if verbose > 1: print("  Adding illumination '%s' protocol for session '%s'" % (i,s))
       session.add(Protocol('all', s, illumination=i))
       session.add(Protocol('illumination', s, illumination=i))
 
     for o in File.occlusion_choices[1:]:
-      if verbose > 1: print "  Adding occlusion '%s' protocol for session '%s'" % (o,s)
+      if verbose > 1: print("  Adding occlusion '%s' protocol for session '%s'" % (o,s))
       session.add(Protocol('all', s, occlusion=o))
       session.add(Protocol('occlusion', s, occlusion=o))
 
       # add mixed occlusion/illumination protocol
       for i in File.illumination_choices[1:3]:
-        if verbose > 1: print "  Adding occlusion '%s' and illumination '%s' protocol for session '%s'" % (o, i,s)
+        if verbose > 1: print("  Adding occlusion '%s' and illumination '%s' protocol for session '%s'" % (o, i,s))
         session.add(Protocol('all', s, illumination=i, occlusion=o))
         session.add(Protocol('occlusion_and_illumination', s, illumination=i, occlusion=o))
 
     # add the neutral files to all of the protocols
     for protocol in Protocol.protocol_choices:
-      if verbose > 1: print "  Adding neutral files for session '%s'" % s
+      if verbose > 1: print("  Adding neutral files for session '%s'" % s)
       session.add(Protocol(protocol, s, expression=File.expression_choices[0], illumination=File.illumination_choices[0], occlusion=File.occlusion_choices[0]))
 
 
