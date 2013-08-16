@@ -90,7 +90,7 @@ class File(Base, xbob.db.verification.utils.File):
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
     # automatically fill member variables according to shot id
-    self.session = self.session_choices[(shot_id-1) / 13]
+    self.session = self.session_choices[int((shot_id-1) / 13)]
     shot_id = (shot_id-1) % 13 + 1
 
     self.purpose = self.purpose_choices[0 if shot_id == 1 else 1]
