@@ -22,6 +22,7 @@ AR face database.
 """
 
 import os
+import six
 from .models import *
 from .driver import Interface
 
@@ -191,8 +192,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
     genders = self.check_parameters_for_validity(genders, "gender", self.m_genders)
 
     # assure that the given model ids are in a tuple
-    if isinstance(model_ids, str) or isinstance(model_ids, unicode):
-      model_ids = (model_ids,)
+    if isinstance(model_ids, six.string_types): model_ids = (model_ids,)
 
 
     def _filter_types(query):
