@@ -3,7 +3,7 @@
 # @author: Manuel Guenther <Manuel.Guenther@idiap.ch>
 # @date:   Wed Jul  4 14:12:51 CEST 2012
 #
-# Copyright (C) 2011-2012 Idiap Research Institute, Martigny, Switzerland
+# Copyright (C) 2011-2013 Idiap Research Institute, Martigny, Switzerland
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
