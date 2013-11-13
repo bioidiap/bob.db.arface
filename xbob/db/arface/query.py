@@ -37,9 +37,9 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
   and for the data itself inside the database.
   """
 
-  def __init__(self):
+  def __init__(self, original_directory = None, original_extension = '.ppm'):
     # call base class constructor
-    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
+    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File, original_directory=original_directory, original_extension=original_extension)
     # defines valid entries for various parameters
     self.m_groups  = Client.group_choices
     self.m_purposes = File.purpose_choices

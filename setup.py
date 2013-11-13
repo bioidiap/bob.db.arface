@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.arface',
-    version='1.1.4a0',
+    version='1.2.1a0',
     description='AR Face  Database Access API for Bob',
     url='https://pypi.python.org/pypi/xbob.db.arface',
     license='GPLv3',
@@ -42,7 +42,7 @@ setup(
       'setuptools',
       'six',  # python2/3 compatibility library
       'bob',  # base signal proc./machine learning library
-      'xbob.db.verification.utils>=0.1.4' # defines a set of utilities for face verification databases like this one.
+      'xbob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
