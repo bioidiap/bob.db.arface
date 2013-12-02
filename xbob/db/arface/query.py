@@ -50,6 +50,10 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
     self.m_occlusions = File.occlusion_choices
     self.m_protocols = Protocol.protocol_choices
 
+  def groups(self, protocol=None):
+    """Returns the names of all registered groups"""
+
+    return ProtocolPurpose.group_choices
 
   def clients(self, groups=None, genders=None, protocol=None):
     """Returns a list of Client objects for the specific query by the user.
