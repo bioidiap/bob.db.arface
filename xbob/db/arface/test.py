@@ -30,6 +30,7 @@ class ARfaceDatabaseTest(unittest.TestCase):
     db = xbob.db.arface.Database()
 
     # test that the expected number of clients is returned
+    self.assertEqual(len(db.groups()), 3)
     self.assertEqual(len(db.client_ids()), 136)
     self.assertEqual(len(db.client_ids(genders='m')), 76)
     self.assertEqual(len(db.client_ids(genders='w')), 60)

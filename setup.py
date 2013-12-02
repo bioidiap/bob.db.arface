@@ -24,7 +24,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='xbob.db.arface',
-    version='1.2.1a0',
+    version='1.2.1',
     description='AR Face  Database Access API for Bob',
     url='https://pypi.python.org/pypi/xbob.db.arface',
     license='GPLv3',

@@ -53,7 +53,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
   def groups(self, protocol=None):
     """Returns the names of all registered groups"""
 
-    return ProtocolPurpose.group_choices
+    return self.m_groups
 
   def clients(self, groups=None, genders=None, protocol=None):
     """Returns a list of Client objects for the specific query by the user.
