@@ -23,7 +23,24 @@ import os, sys
 import unittest
 import bob.db.arface
 
+def db_available(test):
+  """Decorator for detecting if OpenCV/Python bindings are available"""
+  from bob.io.base.test_utils import datafile
+  from nose.plugins.skip import SkipTest
+  import functools
 
+  @functools.wraps(test)
+  def wrapper(*args, **kwargs):
+    dbfile = datafile("db.sql3", __name__, None)
+    if os.path.exists(dbfile):
+      return test(*args, **kwargs)
+    else:
+      raise SkipTest("The database file '%s' is not available; did you forget to run 'bob_dbmanage.py %s create' ?" % (dbfile, 'arface'))
+
+  return wrapper
+
+
+@db_available
 def test_clients():
   # test that the expected number of clients is returned
   db = bob.db.arface.Database()
@@ -40,6 +57,7 @@ def test_clients():
   assert db.model_ids() == [client.id for client in db.clients()]
 
 
+@db_available
 def test_files():
   # test that the files() function returns reasonable numbers of files
   db = bob.db.arface.Database()
@@ -79,6 +97,7 @@ def test_files():
       assert len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='occlusion_and_illumination')) == 8 * len(model_ids)
 
 
+@db_available
 def test_annotations():
   # Tests that for all files the annotated eye positions exist and are in correct order
   db = bob.db.arface.Database()
@@ -94,6 +113,7 @@ def test_annotations():
     assert annotations['leye'][1] > annotations['reye'][1]
 
 
+@db_available
 def test_driver_api():
 
   from bob.db.base.script.dbmanage import main
