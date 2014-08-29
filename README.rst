@@ -3,9 +3,9 @@
 ==================
 
 This package contains the access API and descriptions for the `AR Face
-Database <http://www2.ece.ohio-state.edu/~aleix/ARdatabase.html>`_. The actual 
-raw data for the database should be downloaded from the original URL. This 
-package only contains the `Bob <http://www.idiap.ch/software/bob/>`_ accessor 
+Database <http://www2.ece.ohio-state.edu/~aleix/ARdatabase.html>`_. The actual
+raw data for the database should be downloaded from the original URL. This
+package only contains the `Bob <http://www.idiap.ch/software/bob/>`_ accessor
 methods to use the DB directly from python, with our certified protocols.
 
 You would normally not install this package unless you are maintaining it. What
@@ -27,7 +27,7 @@ The package is available in two different distribution formats:
 1. You can download it from `PyPI <http://pypi.python.org/pypi>`_, or
 
 2. You can download it in its source form from `its git repository
-   <https://github.com/bioidiap/xbob.db.arface>`_. When you download the
+   <https://github.com/bioidiap/bob.db.arface>`_. When you download the
    version at the git repository, you will need to run a command to recreate
    the backend SQLite file required for its operation. This means that the
    database raw files must be installed somewhere in this case. With option
@@ -47,11 +47,11 @@ script)::
 
     install_requires=[
       ...
-      "xbob.db.arface",
+      "bob.db.arface",
     ],
 
 Proceed normally with your ``boostrap/buildout`` steps and you should be all
-set. That means you can now import the ``xbob.db.arface`` namespace into your scripts.
+set. That means you can now import the ``bob.db.arface`` namespace into your scripts.
 
 Modify your buildout.cfg and download from git
 ==============================================
@@ -67,8 +67,8 @@ lines::
   auto-checkout = *
   eggs = bob
          ...
-         xbob.db.arface
+         bob.db.arface
 
   [sources]
-  xbob.db.arface = git https://github.com/bioidiap/xbob.db.arface.git
+  bob.db.arface = git https://github.com/bioidiap/bob.db.arface.git
   ...

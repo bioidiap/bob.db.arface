@@ -23,14 +23,14 @@ from setuptools import setup, find_packages
 # parameters that define our package.
 setup(
 
-    name='xbob.db.arface',
-    version='1.2.2a0',
+    name='bob.db.arface',
+    version='2.0.0a0',
     description='AR Face  Database Access API for Bob',
-    url='https://pypi.python.org/pypi/xbob.db.arface',
+    url='https://pypi.python.org/pypi/bob.db.arface',
     license='GPLv3',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
-    keywords='face recognition, bob, xbob, xbob.db, AR face',
+    keywords='face recognition, bob, bob.db, AR face',
     long_description=open('README.rst').read(),
 
     # This line is required for any distutils based packaging.
@@ -41,29 +41,29 @@ setup(
     install_requires=[
       'setuptools',
       'six',  # python2/3 compatibility library
-      'bob',  # base signal proc./machine learning library
-      'xbob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
+      'bob.db.base',
+      'bob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
-      'xbob',
-      'xbob.db',
-      ],
+      'bob',
+      'bob.db',
+    ],
 
     entry_points = {
       # bob database declaration
       'bob.db': [
-        'arface = xbob.db.arface.driver:Interface',
-        ],
+        'arface = bob.db.arface.driver:Interface',
+      ],
 
       # bob unittest declaration
       'bob.test': [
-        'arface = xbob.db.arface.test:ARfaceDatabaseTest',
-        ],
-      },
+        'arface = bob.db.arface.test',
+      ],
+    },
 
     classifiers = [
-      'Development Status :: 5 - Production/Stable',
+      'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',
       'Intended Audience :: Education',
@@ -74,5 +74,5 @@ setup(
       'Programming Language :: Python :: 3',
       'Topic :: Scientific/Engineering :: Artificial Intelligence',
       'Topic :: Database :: Front-Ends',
-      ],
+    ],
 )

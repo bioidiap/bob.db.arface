@@ -26,11 +26,11 @@ import six
 from .models import *
 from .driver import Interface
 
-import xbob.db.verification.utils
+import bob.db.verification.utils
 
 SQLITE_FILE = Interface().files()[0]
 
-class Database(xbob.db.verification.utils.SQLiteDatabase):
+class Database(bob.db.verification.utils.SQLiteDatabase):
   """The database class opens and maintains a connection opened to the Database.
 
   It provides many different ways to probe for the characteristics of the data
@@ -39,7 +39,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
 
   def __init__(self, original_directory = None, original_extension = '.ppm'):
     # call base class constructor
-    xbob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File, original_directory=original_directory, original_extension=original_extension)
+    bob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File, original_directory=original_directory, original_extension=original_extension)
     # defines valid entries for various parameters
     self.m_groups  = Client.group_choices
     self.m_purposes = File.purpose_choices
@@ -110,7 +110,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
   model_ids = client_ids
 
 
-  def get_client_id_from_file_id(self, file_id):
+  def get_client_id_from_file_id(self, file_id, **kwargs):
     """Returns the client_id (real client id) attached to the given file_id
 
     Keyword Parameters:
@@ -127,7 +127,7 @@ class Database(xbob.db.verification.utils.SQLiteDatabase):
     return q.first().client_id
 
 
-  def get_client_id_from_model_id(self, model_id):
+  def get_client_id_from_model_id(self, model_id, **kwargs):
     """Returns the client_id attached to the given model_id
 
     Keyword Parameters:

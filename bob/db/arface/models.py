@@ -22,11 +22,11 @@
 
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, or_, and_, not_
-from bob.db.sqlalchemy_migration import Enum, relationship
+from bob.db.base.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
-import xbob.db.verification.utils
+import bob.db.verification.utils
 
 import os
 
@@ -53,7 +53,7 @@ class Client(Base):
     return "<Client('%s')>" % self.id
 
 
-class File(Base, xbob.db.verification.utils.File):
+class File(Base, bob.db.verification.utils.File):
   """Information about the files of the AR face database. Each file includes
 
   * the session (first, second)
@@ -85,7 +85,7 @@ class File(Base, xbob.db.verification.utils.File):
 
   def __init__(self, image_name):
     # call base class constructor
-    xbob.db.verification.utils.File.__init__(self, file_id = image_name, client_id = image_name[:5], path = image_name)
+    bob.db.verification.utils.File.__init__(self, file_id = image_name, client_id = image_name[:5], path = image_name)
 
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
