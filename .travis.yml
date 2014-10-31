@@ -6,6 +6,7 @@ matrix:
     env:
     - secure: SGfV5CshmbYdgioFkuFOSzzy2TjqxAlIgkDaS5AgF3ngaSDFCtzOUdScHhc844deoht0+LW5QVyCDpv2fXAOqUIrt7mEWJyzuIKcQCX1wRaIAnU+dHIVRzft8LCp+0R/mPH93Io9TywmH/zJtRDPKuMHEE5P+n1Bkz4AUcfKkiA=
     - secure: NPd1dEeTLWQiLWrhG2edR0n2zHk/vC8xvsEpoCZ6L6DOSZ/kocM5sme4Ssb3fAtE+RI1Q5+0iSa3Ii9aOaDJy+SyOiAWRgTZAZonHZvRX+c54O27czyfNXzPRNuySdc9t+hVj+LFBvu/ZbK3b1gVtNOw65KJFAR3+2xjpoK53qE=
+    - BOB_DOCUMENTATION_SERVER=https://www.idiap.ch/software/bob/docs/latest/bioidiap/%s/master
   - python: 3.2
     env:
     - NUMPYSPEC===1.8.0
@@ -15,7 +16,7 @@ matrix:
 before_install:
 - sudo add-apt-repository -y ppa:biometrics/bob
 - sudo apt-get update -qq
-- sudo apt-get install -qq --force-yes libboost-all-dev libblitz1-dev libhdf5-serial-dev libatlas-dev libatlas-base-dev liblapack-dev
+- sudo apt-get install -qq --force-yes libboost-all-dev libblitz1-dev libhdf5-serial-dev libatlas-dev libatlas-base-dev liblapack-dev texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
 - if [ -n "${NUMPYSPEC}" ]; then sudo apt-get install -qq gfortran; fi
 - if [ -n "${NUMPYSPEC}" ]; then pip install --upgrade pip setuptools; fi
 - if [ -n "${NUMPYSPEC}" ]; then pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel numpy$NUMPYSPEC; fi

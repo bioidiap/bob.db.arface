@@ -66,7 +66,7 @@ class File(Base, bob.db.verification.utils.File):
 
   # We define the possible values for the member variables as STATIC class variables
   session_choices = ('first', 'second')
-  purpose_choices = ('enrol', 'probe')
+  purpose_choices = ('enroll', 'probe')
   expression_choices = ('neutral', 'smile', 'anger', 'scream')
   illumination_choices = ('front', 'left', 'right', 'all')
   occlusion_choices = ('none', 'sunglasses', 'scarf')

@@ -55,14 +55,10 @@ setup(
       'bob.db': [
         'arface = bob.db.arface.driver:Interface',
       ],
-
-      # bob unittest declaration
-      'bob.test': [
-        'arface = bob.db.arface.test',
-      ],
     },
 
     classifiers = [
+      'Framework :: Bob',
       'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',

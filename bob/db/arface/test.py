@@ -79,11 +79,11 @@ def test_files():
     model_ids = db.model_ids(groups=g)
     assert len(db.objects(groups=g, protocol='all')) == 26 * len(model_ids)
     for protocol in db.m_protocols:
-      assert len(db.objects(groups=g, purposes='enrol', protocol=protocol)) == 2 * len(model_ids)
+      assert len(db.objects(groups=g, purposes='enroll', protocol=protocol)) == 2 * len(model_ids)
     for model_id in model_ids:
-      # two enrol files for all protocols
+      # two enroll files for all protocols
       for protocol in db.m_protocols:
-        assert len(db.objects(groups=g, model_ids = model_id, purposes='enrol', protocol=protocol)) == 2
+        assert len(db.objects(groups=g, model_ids = model_id, purposes='enroll', protocol=protocol)) == 2
 
       # 24 probe files for the (default) 'all' protocol
       assert len(db.objects(groups=g, model_ids = model_id, purposes='probe', protocol='all')) == 24 * len(model_ids)

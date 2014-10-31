@@ -155,7 +155,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase):
       Note: this field is ignored for group 'world'.
 
     purposes
-      One or several purposes for which files should be retrieved ('enrol', 'probe').
+      One or several purposes for which files should be retrieved ('enroll', 'probe').
       Note: this field is ignored for group 'world'.
 
     model_ids
@@ -169,17 +169,17 @@ class Database(bob.db.verification.utils.SQLiteDatabase):
     expressions
       One or several expressions from ('neutral', 'smile', 'anger', 'scream').
       If not specified, objects with all expressions are returned.
-      Ignored for purpose 'enrol'.
+      Ignored for purpose 'enroll'.
 
     illuminations
       One or several illuminations from ('front', 'left', 'right', 'all').
       If not specified, objects with all illuminations are returned.
-      Ignored for purpose 'enrol'.
+      Ignored for purpose 'enroll'.
 
     occlusions
       One or several occlusions from ('none', 'sunglasses', 'scarf').
       If not specified, objects with all occlusions are returned.
-      Ignored for purpose 'enrol'.
+      Ignored for purpose 'enroll'.
 
     genders
       One of the genders ('m', 'w') of the clients.
@@ -223,12 +223,12 @@ class Database(bob.db.verification.utils.SQLiteDatabase):
 
       t_groups = ('dev',) if not 'eval' in groups else ('eval',) if not 'dev' in groups else ('dev','eval')
 
-      if 'enrol' in purposes:
+      if 'enroll' in purposes:
         queries.append(\
             self.query(File).join(Client)\
                 .filter(Client.sgroup.in_(t_groups))\
                 .filter(Client.gender.in_(genders))\
-                .filter(File.purpose == 'enrol')\
+                .filter(File.purpose == 'enroll')\
         )
 
       if 'probe' in purposes:
