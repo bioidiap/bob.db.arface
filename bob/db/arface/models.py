@@ -82,6 +82,7 @@ class File(Base, bob.db.verification.utils.File):
 
   # a back-reference from the client class to a list of files
   client = relationship("Client", backref=backref("files", order_by=id))
+  annotation = relationship("Annotation", backref=backref("file"), uselist=False)
 
   def __init__(self, image_name):
     # call base class constructor

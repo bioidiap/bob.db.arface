@@ -42,7 +42,7 @@ setup(
       'setuptools',
       'six',  # python2/3 compatibility library
       'bob.db.base',
-      'bob.db.verification.utils>=1.0.0' # defines a set of utilities for face verification databases like this one.
+      'bob.db.verification.utils' # defines a set of utilities for face verification databases like this one.
     ],
 
     namespace_packages = [
