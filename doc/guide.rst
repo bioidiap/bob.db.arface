@@ -33,10 +33,10 @@ In any case, the images with neutral facial expression, neutral illumination and
 The Database Interface
 ----------------------
 
-The AR face database complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.verification.utils.SQLiteDatabase`.
+The :py:class:`bob.db.arface.Database` complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.verification.utils.SQLiteDatabase`.
 
 .. todo::
-   Explain the particularities of the `AR Face`_ database.
+   Explain the particularities of the :py:class:`bob.db.arface.Database`.
 
 
 .. _ar face: http://www2.ece.ohio-state.edu/~aleix/ARdatabase.html
