@@ -17,7 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, dist
+dist.Distribution(dict(setup_requires=['bob.extension']))
+
+from bob.extension.utils import load_requirements
+install_requires = load_requirements()
 
 # Define package version
 version = open("version.txt").read().rstrip()
@@ -41,12 +45,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
 
-    install_requires=[
-      'setuptools',
-      'six',  # python2/3 compatibility library
-      'bob.db.base',
-      'bob.db.verification.utils' # defines a set of utilities for face verification databases like this one.
-    ],
+    install_requires = install_requires,
 
     namespace_packages = [
       'bob',
