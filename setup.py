@@ -33,7 +33,7 @@ setup(
     name='bob.db.arface',
     version=version,
     description='AR Face  Database Access API for Bob',
-    url='https://pypi.python.org/pypi/bob.db.arface',
+    url='https://github.com/bioidiap/bob.db.arface',
     license='GPLv3',
     author='Laurent El Shafey',
     author_email='laurent.el-shafey@idiap.ch',
