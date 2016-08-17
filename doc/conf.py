@@ -111,7 +111,7 @@ pygments_style = 'sphinx'
 
 # Some variables which are useful for generated material
 project_variable = project.replace('.', '_')
-short_description = u'<SHORT_DESCRIPTION>'
+short_description = u'AR Face Database Interface for Bob'
 owner = [u'Idiap Research Institute']
 
 
