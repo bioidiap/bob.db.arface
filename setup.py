@@ -50,6 +50,10 @@ setup(
 
 
     entry_points = {
+       # bob database declaration
+       'bob.db': [
+         'arface = bob.db.arface.driver:Interface',
+       ],
     },
 
     classifiers = [
