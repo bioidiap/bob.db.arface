@@ -33,7 +33,7 @@ In any case, the images with neutral facial expression, neutral illumination and
 The Database Interface
 ----------------------
 
-The :py:class:`bob.db.arface.Database` complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`.
+The :py:class:`bob.db.arface.Database` complies with the standard biometric verification database, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`.
 
 .. todo::
    Explain the particularities of the :py:class:`bob.db.arface.Database`.
