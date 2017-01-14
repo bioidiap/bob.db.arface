@@ -9,9 +9,9 @@
    :target: https://gitlab.idiap.ch/bob/bob.db.arface/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.arface
-.. image:: http://img.shields.io/pypi/v/bob.db.arface.png
+.. image:: http://img.shields.io/pypi/v/bob.db.arface.svg
    :target: https://pypi.python.org/pypi/bob.db.arface
-.. image:: http://img.shields.io/pypi/dm/bob.db.arface.png
+.. image:: http://img.shields.io/pypi/dm/bob.db.arface.svg
    :target: https://pypi.python.org/pypi/bob.db.arface
 .. image:: https://img.shields.io/badge/original-data--files-a000a0.png
    :target: http://www2.ece.ohio-state.edu/~aleix/ARdatabase.html
