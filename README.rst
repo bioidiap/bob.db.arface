@@ -1,9 +1,9 @@
 .. vim: set fileencoding=utf-8 :
 .. Wed 17 Aug 16:52:25 CEST 2016
 
-.. image:: http://img.shields.io/badge/docs-stable-yellow.png
+.. image:: http://img.shields.io/badge/docs-stable-yellow.svg
    :target: http://pythonhosted.org/bob.db.arface/index.html
-.. image:: http://img.shields.io/badge/docs-latest-orange.png
+.. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.arface/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.arface/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.arface/commits/master
@@ -46,6 +46,6 @@ development `mailing list`_.
 
 .. Place your references here:
 .. _bob: https://www.idiap.ch/software/bob
-.. _installation: https://gitlab.idiap.ch/bob/bob/wikis/Installation
+.. _installation: https://www.idiap.ch/software/bob/install
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/bob-devel
 .. _ar face: http://www2.ece.ohio-state.edu/~aleix/ARdatabase.html
