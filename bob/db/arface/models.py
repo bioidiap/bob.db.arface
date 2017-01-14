@@ -86,7 +86,8 @@ class File(Base, bob.db.base.File):
 
   def __init__(self, image_name):
     # call base class constructor
-    bob.db.base.File.__init__(self, file_id = image_name, client_id = image_name[:5], path = image_name)
+    bob.db.base.File.__init__(self, file_id = image_name, path = image_name)
+    self.client_id = image_name[:5]
 
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
