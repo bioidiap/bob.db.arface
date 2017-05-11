@@ -30,6 +30,7 @@ import bob.db.base
 
 SQLITE_FILE = Interface().files()[0]
 
+
 class Database(bob.db.base.SQLiteDatabase):
   """The database class opens and maintains a connection opened to the Database.
 
@@ -37,14 +38,14 @@ class Database(bob.db.base.SQLiteDatabase):
   and for the data itself inside the database.
   """
 
-  def __init__(self, original_directory = None, original_extension = '.ppm'):
+  def __init__(self, original_directory=None, original_extension='.ppm'):
     # call base class constructor
-    super(Database, self).__init__(SQLITE_FILE, File)
-    self.original_directory = original_directory
-    self.original_extension = original_extension    
-    
+    super(Database, self).__init__(SQLITE_FILE, File,
+                                   original_directory,
+                                   original_extension)
+
     # defines valid entries for various parameters
-    self.m_groups  = Client.group_choices
+    self.m_groups = Client.group_choices
     self.m_purposes = File.purpose_choices
     self.m_genders = Client.gender_choices
     self.m_sessions = File.session_choices
@@ -78,14 +79,14 @@ class Database(bob.db.base.SQLiteDatabase):
     """
 
     groups = self.check_parameters_for_validity(groups, "group", self.m_groups)
-    genders = self.check_parameters_for_validity(genders, "group", self.m_genders)
+    genders = self.check_parameters_for_validity(
+        genders, "group", self.m_genders)
 
     query = self.query(Client)\
                 .filter(Client.sgroup.in_(groups))\
                 .filter(Client.gender.in_(genders))
 
     return [client for client in query]
-
 
   def client_ids(self, groups=None, genders=None, protocol=None):
     """Returns a list of client ids for the specific query by the user.
@@ -108,10 +109,8 @@ class Database(bob.db.base.SQLiteDatabase):
 
     return [client.id for client in self.clients(groups, genders, protocol)]
 
-
   # model_ids() and client_ids() functions are identical
   model_ids = client_ids
-
 
   def get_client_id_from_file_id(self, file_id, **kwargs):
     """Returns the client_id (real client id) attached to the given file_id
@@ -129,7 +128,6 @@ class Database(bob.db.base.SQLiteDatabase):
     assert q.count() == 1
     return q.first().client_id
 
-
   def get_client_id_from_model_id(self, model_id, **kwargs):
     """Returns the client_id attached to the given model_id
 
@@ -142,8 +140,6 @@ class Database(bob.db.base.SQLiteDatabase):
     """
     # client ids and model ids are identical...
     return model_id
-
-
 
   def objects(self, groups=None, protocol=None, purposes=None, model_ids=None, sessions=None, expressions=None, illuminations=None, occlusions=None, genders=None):
     """Using the specified restrictions, this function returns a list of File objects.
@@ -191,16 +187,22 @@ class Database(bob.db.base.SQLiteDatabase):
     """
     # check that every parameter is as expected
     groups = self.check_parameters_for_validity(groups, "group", self.m_groups)
-    purposes = self.check_parameters_for_validity(purposes, "purpose", self.m_purposes)
-    sessions = self.check_parameters_for_validity(sessions, "session", self.m_sessions)
-    expressions = self.check_parameters_for_validity(expressions, "expression", self.m_expressions)
-    illuminations = self.check_parameters_for_validity(illuminations, "illumination", self.m_illuminations)
-    occlusions = self.check_parameters_for_validity(occlusions, "occlusion", self.m_occlusions)
-    genders = self.check_parameters_for_validity(genders, "gender", self.m_genders)
+    purposes = self.check_parameters_for_validity(
+        purposes, "purpose", self.m_purposes)
+    sessions = self.check_parameters_for_validity(
+        sessions, "session", self.m_sessions)
+    expressions = self.check_parameters_for_validity(
+        expressions, "expression", self.m_expressions)
+    illuminations = self.check_parameters_for_validity(
+        illuminations, "illumination", self.m_illuminations)
+    occlusions = self.check_parameters_for_validity(
+        occlusions, "occlusion", self.m_occlusions)
+    genders = self.check_parameters_for_validity(
+        genders, "gender", self.m_genders)
 
     # assure that the given model ids are in a tuple
-    if isinstance(model_ids, six.string_types): model_ids = (model_ids,)
-
+    if isinstance(model_ids, six.string_types):
+      model_ids = (model_ids,)
 
     def _filter_types(query):
       return query.filter(File.expression.in_(expressions))\
@@ -214,34 +216,36 @@ class Database(bob.db.base.SQLiteDatabase):
     probe_queries = []
 
     if 'world' in groups:
-      queries.append(\
-        _filter_types(
-          self.query(File).join(Client)\
-              .filter(Client.sgroup == 'world')\
-        )
+      queries.append(
+          _filter_types(
+              self.query(File).join(Client)
+              .filter(Client.sgroup == 'world')
+          )
       )
 
     if 'dev' in groups or 'eval' in groups:
-      protocol = self.check_parameter_for_validity(protocol, "protocol", self.m_protocols, 'all')
+      protocol = self.check_parameter_for_validity(
+          protocol, "protocol", self.m_protocols, 'all')
 
-      t_groups = ('dev',) if not 'eval' in groups else ('eval',) if not 'dev' in groups else ('dev','eval')
+      t_groups = ('dev',) if not 'eval' in groups else (
+          'eval',) if not 'dev' in groups else ('dev', 'eval')
 
       if 'enroll' in purposes:
-        queries.append(\
-            self.query(File).join(Client)\
-                .filter(Client.sgroup.in_(t_groups))\
-                .filter(Client.gender.in_(genders))\
-                .filter(File.purpose == 'enroll')\
+        queries.append(
+            self.query(File).join(Client)
+                .filter(Client.sgroup.in_(t_groups))
+                .filter(Client.gender.in_(genders))
+                .filter(File.purpose == 'enroll')
         )
 
       if 'probe' in purposes:
-        probe_queries.append(\
+        probe_queries.append(
             _filter_types(
-              self.query(File).join(Client)\
-                  .join((Protocol, and_(File.expression == Protocol.expression, File.illumination == Protocol.illumination, File.occlusion == Protocol.occlusion)))\
-                  .filter(Client.sgroup.in_(t_groups))\
-                  .filter(File.purpose == 'probe')\
-                  .filter(Protocol.name == protocol)
+                self.query(File).join(Client)
+                .join((Protocol, and_(File.expression == Protocol.expression, File.illumination == Protocol.illumination, File.occlusion == Protocol.occlusion)))
+                .filter(Client.sgroup.in_(t_groups))
+                .filter(File.purpose == 'probe')
+                .filter(Protocol.name == protocol)
             )
         )
 
@@ -260,7 +264,6 @@ class Database(bob.db.base.SQLiteDatabase):
 
     return retval
 
-
   def annotations(self, file):
     """Returns the annotations for the image with the given file id.
 
@@ -273,5 +276,6 @@ class Database(bob.db.base.SQLiteDatabase):
     """
 
     self.assert_validity()
-    # return the annotations as returned by the call function of the Annotation object
+    # return the annotations as returned by the call function of the
+    # Annotation object
     return file.annotation()

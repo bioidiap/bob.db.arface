@@ -32,11 +32,13 @@ import os
 
 Base = declarative_base()
 
+
 class Client(Base):
   """Information about the clients (identities) of the AR face database"""
   __tablename__ = 'client'
 
-  # We define the possible values for the member variables as STATIC class variables
+  # We define the possible values for the member variables as STATIC class
+  # variables
   gender_choices = ('m', 'w')
   group_choices = ('world', 'dev', 'eval')
 
@@ -64,7 +66,8 @@ class File(Base, bob.db.base.File):
   """
   __tablename__ = 'file'
 
-  # We define the possible values for the member variables as STATIC class variables
+  # We define the possible values for the member variables as STATIC class
+  # variables
   session_choices = ('first', 'second')
   purpose_choices = ('enroll', 'probe')
   expression_choices = ('neutral', 'smile', 'anger', 'scream')
@@ -82,31 +85,33 @@ class File(Base, bob.db.base.File):
 
   # a back-reference from the client class to a list of files
   client = relationship("Client", backref=backref("files", order_by=id))
-  annotation = relationship("Annotation", backref=backref("file"), uselist=False)
+  annotation = relationship(
+      "Annotation", backref=backref("file"), uselist=False)
 
   def __init__(self, image_name):
     # call base class constructor
-    bob.db.base.File.__init__(self, file_id = image_name, path = image_name)
+    bob.db.base.File.__init__(self, path=image_name, file_id=image_name)
     self.client_id = image_name[:5]
 
     # get shot id
     shot_id = int(os.path.splitext(image_name)[0][6:])
     # automatically fill member variables according to shot id
-    self.session = self.session_choices[int((shot_id-1) / 13)]
-    shot_id = (shot_id-1) % 13 + 1
+    self.session = self.session_choices[int((shot_id - 1) / 13)]
+    shot_id = (shot_id - 1) % 13 + 1
 
     self.purpose = self.purpose_choices[0 if shot_id == 1 else 1]
 
-    self.expression = self.expression_choices[shot_id - 1] if shot_id in (2,3,4) else self.expression_choices[0]
+    self.expression = self.expression_choices[
+        shot_id - 1] if shot_id in (2, 3, 4) else self.expression_choices[0]
 
-    self.illumination = self.illumination_choices[shot_id - 4]  if shot_id in (5,6,7) else \
-                        self.illumination_choices[shot_id - 8]  if shot_id in (9,10) else \
-                        self.illumination_choices[shot_id - 11] if shot_id in (12,13) else \
-                        self.illumination_choices[0]
+    self.illumination = self.illumination_choices[shot_id - 4]  if shot_id in (5, 6, 7) else \
+        self.illumination_choices[shot_id - 8]  if shot_id in (9, 10) else \
+        self.illumination_choices[shot_id - 11] if shot_id in (12, 13) else \
+        self.illumination_choices[0]
 
-    self.occlusion = self.occlusion_choices[1] if shot_id in (8,9,10) else \
-                     self.occlusion_choices[2] if shot_id in (11,12,13) else \
-                     self.occlusion_choices[0]
+    self.occlusion = self.occlusion_choices[1] if shot_id in (8, 9, 10) else \
+        self.occlusion_choices[2] if shot_id in (11, 12, 13) else \
+        self.occlusion_choices[0]
 
 
 class Annotation(Base):
@@ -117,9 +122,9 @@ class Annotation(Base):
   id = Column(Integer, primary_key=True)
   file_id = Column(Integer, ForeignKey('file.id'))
 
-  le_x = Column(Integer) # left eye
+  le_x = Column(Integer)  # left eye
   le_y = Column(Integer)
-  re_x = Column(Integer) # right eye
+  re_x = Column(Integer)  # right eye
   re_y = Column(Integer)
 
   def __init__(self, file_id, eyes):
@@ -133,28 +138,30 @@ class Annotation(Base):
 
   def __call__(self):
     """Returns the annotations of this database in a dictionary: {'reye' : (re_y, re_x), 'leye' : (le_y, le_x)}."""
-    return {'reye' : (self.re_y, self.re_x), 'leye' : (self.le_y, self.le_x) }
+    return {'reye': (self.re_y, self.re_x), 'leye': (self.le_y, self.le_x)}
 
   def __repr__(self):
     return "<Annotation('%s': 'reye'=%dx%d, 'leye'=%dx%d)>" % (self.file_id, self.re_y, self.re_x, self.le_y, self.le_x)
-
 
 
 class Protocol(Base):
   """The protocols of the AR face database."""
   __tablename__ = 'protocol'
 
-  protocol_choices = ('all', 'expression', 'illumination', 'occlusion', 'occlusion_and_illumination')
+  protocol_choices = ('all', 'expression', 'illumination',
+                      'occlusion', 'occlusion_and_illumination')
 
   id = Column(Integer, primary_key=True)
   name = Column(Enum(*protocol_choices))
   session = Column(Enum(*File.session_choices), ForeignKey('file.session'))
-  expression = Column(Enum(*File.expression_choices), ForeignKey('file.expression'))
-  illumination = Column(Enum(*File.illumination_choices), ForeignKey('file.illumination'))
-  occlusion = Column(Enum(*File.occlusion_choices), ForeignKey('file.occlusion'))
+  expression = Column(Enum(*File.expression_choices),
+                      ForeignKey('file.expression'))
+  illumination = Column(Enum(*File.illumination_choices),
+                        ForeignKey('file.illumination'))
+  occlusion = Column(Enum(*File.occlusion_choices),
+                     ForeignKey('file.occlusion'))
 
-
-  def __init__(self, protocol, session, expression = 'neutral', illumination = 'front', occlusion = 'none'):
+  def __init__(self, protocol, session, expression='neutral', illumination='front', occlusion='none'):
     self.name = protocol
     self.session = session
     self.expression = expression
@@ -163,4 +170,3 @@ class Protocol(Base):
 
   def __repr__(self):
     return "<Protocol('%s', '%s', '%s', '%s', '%s')>" % (self.name, self.session, self.expression, self.illumination, self.occlusion)
-
